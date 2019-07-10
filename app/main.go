@@ -1,4 +1,4 @@
-package steamwheedle_cartel_download_auctions_server_app
+package main
 
 import (
 	"fmt"
