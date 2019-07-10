@@ -33,8 +33,7 @@ steps:
       'download-auctions-server',
       '--image', 'gcr.io/$PROJECT_ID/steamwheedle-cartel/download-auctions/server/runtime',
       '--region', 'us-central1',
-      '--platform', 'managed',
-      '--allow-unauthenticated'
+      '--platform', 'managed'
     ]
 images: [
   'gcr.io/$PROJECT_ID/steamwheedle-cartel/download-auctions/server/build:latest',
