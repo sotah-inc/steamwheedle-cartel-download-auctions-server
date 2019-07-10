@@ -1,5 +1,5 @@
 # building
-FROM golang:1.11-alpine
+FROM golang:1.12-alpine
 
 # installing deps
 RUN apk update \
@@ -17,5 +17,4 @@ COPY ./app /srv/app
 RUN go mod download
 
 # building the project
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
-  go build -a -installsuffix cgo -o /go/bin/app .
+RUN go build -o /go/bin/app .
