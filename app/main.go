@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+
+	"github.com/sotah-inc/steamwheedle-cartel/pkg/logging"
 )
 
 var port int
@@ -23,7 +25,11 @@ func init() {
 
 func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, "Hello, world!")
+		if _, err := fmt.Fprint(w, "Hello, world!!!"); err != nil {
+			logging.WithField("error", err.Error()).Error("")
+
+			return
+		}
 	})
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), nil))
