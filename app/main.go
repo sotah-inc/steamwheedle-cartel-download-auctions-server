@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 
 	"cloud.google.com/go/compute/metadata"
 	"github.com/gorilla/mux"
@@ -64,6 +65,8 @@ func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		logging.Info("Received request")
+
+		<-time.After(5 * time.Second)
 
 		if _, err := fmt.Fprint(w, "Hello, world!!!"); err != nil {
 			logging.WithField("error", err.Error()).Error("Failed to return response")
