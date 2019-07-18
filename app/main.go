@@ -7,6 +7,8 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/gorilla/mux"
+
 	"github.com/sotah-inc/steamwheedle-cartel/pkg/logging"
 )
 
@@ -24,13 +26,15 @@ func init() {
 }
 
 func main() {
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	r := mux.NewRouter()
+	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if _, err := fmt.Fprint(w, "Hello, world!!!"); err != nil {
 			logging.WithField("error", err.Error()).Error("")
 
 			return
 		}
-	})
+	}).Methods("POST")
+	http.Handle("/", r)
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), nil))
 }
