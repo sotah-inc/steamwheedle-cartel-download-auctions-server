@@ -68,6 +68,8 @@ func main() {
 
 		<-time.After(5 * time.Second)
 
+		logging.Info("Sending response")
+
 		if _, err := fmt.Fprint(w, "Hello, world!!!"); err != nil {
 			logging.WithField("error", err.Error()).Error("Failed to return response")
 
