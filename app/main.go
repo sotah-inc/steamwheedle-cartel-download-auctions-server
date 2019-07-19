@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -13,6 +14,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/sotah-inc/steamwheedle-cartel/pkg/logging"
 	"github.com/sotah-inc/steamwheedle-cartel/pkg/logging/stackdriver"
+	"github.com/sotah-inc/steamwheedle-cartel/pkg/sotah"
 )
 
 var port int
@@ -35,6 +37,18 @@ func init() {
 
 		return
 	}
+}
+
+func WriteErroneousResponse(w http.ResponseWriter, msg string, err error) {
+	w.WriteHeader(http.StatusInternalServerError)
+
+	if _, err := fmt.Fprint(w, msg); err != nil {
+		logging.WithField("error", err.Error()).Error("Failed to write response")
+
+		return
+	}
+
+	logging.WithField("error", err.Error()).Error(msg)
 }
 
 func main() {
@@ -66,11 +80,34 @@ func main() {
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		logging.Info("Received request")
 
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			WriteErroneousResponse(w, "Could not read request body", err)
+
+			return
+		}
+
+		regionRealm, err := sotah.NewRegionRealmTuple(string(body))
+		if err != nil {
+			WriteErroneousResponse(w, "Could not decode request body", err)
+
+			return
+		}
+
+		logging.WithField("request-body", string(body)).Info("Received region-realm")
+
 		<-time.After(5 * time.Second)
 
 		logging.Info("Sending response")
 
-		if _, err := fmt.Fprint(w, "Hello, world!!!"); err != nil {
+		responseBody, err := regionRealm.EncodeForDelivery()
+		if err != nil {
+			WriteErroneousResponse(w, "Encode response body", err)
+
+			return
+		}
+
+		if _, err := fmt.Fprint(w, responseBody); err != nil {
 			logging.WithField("error", err.Error()).Error("Failed to return response")
 
 			return
