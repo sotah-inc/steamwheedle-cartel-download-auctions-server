@@ -4,11 +4,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"math/rand"
 	"net/http"
 	"os"
 	"strconv"
-	"time"
 
 	"cloud.google.com/go/compute/metadata"
 	"github.com/gorilla/mux"
@@ -96,8 +94,6 @@ func main() {
 		}
 
 		logging.WithField("request-body", string(body)).Info("Received region-realm")
-
-		<-time.After(time.Duration(rand.Intn(5000)) * time.Millisecond)
 
 		logging.Info("Sending response")
 
