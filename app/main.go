@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
 	"strconv"
@@ -96,7 +97,7 @@ func main() {
 
 		logging.WithField("request-body", string(body)).Info("Received region-realm")
 
-		<-time.After(5 * time.Second)
+		<-time.After(time.Duration(rand.Intn(5000)) * time.Millisecond)
 
 		logging.Info("Sending response")
 
