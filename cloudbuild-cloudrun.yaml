@@ -34,7 +34,8 @@ steps:
       '--image', 'gcr.io/$PROJECT_ID/steamwheedle-cartel/download-auctions/server/runtime',
       '--region', 'us-central1',
       '--platform', 'managed',
-      '--no-allow-unauthenticated'
+      '--no-allow-unauthenticated',
+      '--concurrency', '40'
     ]
 images: [
   'gcr.io/$PROJECT_ID/steamwheedle-cartel/download-auctions/server/build:latest',
