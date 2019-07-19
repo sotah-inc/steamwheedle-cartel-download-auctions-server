@@ -23,9 +23,22 @@ github.com/gorilla/mux
 github.com/konsorten/go-windows-terminal-sequences
 # github.com/sirupsen/logrus v1.4.2
 github.com/sirupsen/logrus
-# github.com/sotah-inc/steamwheedle-cartel v0.0.0-20190715165546-e97ac0079c02
+# github.com/sotah-inc/steamwheedle-cartel v0.0.0-20190719183653-0788edb59cb5
 github.com/sotah-inc/steamwheedle-cartel/pkg/logging
 github.com/sotah-inc/steamwheedle-cartel/pkg/logging/stackdriver
+github.com/sotah-inc/steamwheedle-cartel/pkg/sotah
+github.com/sotah-inc/steamwheedle-cartel/pkg/blizzard
+github.com/sotah-inc/steamwheedle-cartel/pkg/sotah/codes
+github.com/sotah-inc/steamwheedle-cartel/pkg/sotah/sortdirections
+github.com/sotah-inc/steamwheedle-cartel/pkg/sotah/sortkinds
+github.com/sotah-inc/steamwheedle-cartel/pkg/util
+github.com/sotah-inc/steamwheedle-cartel/pkg/blizzard/characterclass
+github.com/sotah-inc/steamwheedle-cartel/pkg/blizzard/characterfaction
+github.com/sotah-inc/steamwheedle-cartel/pkg/blizzard/charactergender
+github.com/sotah-inc/steamwheedle-cartel/pkg/blizzard/characterrace
+github.com/sotah-inc/steamwheedle-cartel/pkg/blizzard/itembinds
+github.com/sotah-inc/steamwheedle-cartel/pkg/blizzard/realmpopulations
+github.com/sotah-inc/steamwheedle-cartel/pkg/blizzard/realmtypes
 # go.opencensus.io v0.18.0
 go.opencensus.io/plugin/ocgrpc
 go.opencensus.io/plugin/ochttp

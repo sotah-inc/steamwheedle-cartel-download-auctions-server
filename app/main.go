@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -13,12 +14,14 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/sotah-inc/steamwheedle-cartel/pkg/logging"
 	"github.com/sotah-inc/steamwheedle-cartel/pkg/logging/stackdriver"
-	"github.com/sotah-inc/steamwheedle-cartel/pkg/sotah"
+	"github.com/sotah-inc/steamwheedle-cartel/pkg/sotah/codes"
+	"github.com/sotah-inc/steamwheedle-cartel/pkg/state/run"
 )
 
 var port int
 var serviceName string
 var projectId string
+var state run.DownloadAuctionsState
 
 func init() {
 	parsedPort, err := strconv.Atoi(os.Getenv("PORT"))
@@ -33,6 +36,13 @@ func init() {
 	projectId, err = metadata.Get("project/project-id")
 	if err != nil {
 		log.Fatalf("Failed to get port: %s", err.Error())
+
+		return
+	}
+
+	state, err = run.NewDownloadAuctionsState(run.DownloadAuctionsStateConfig{ProjectId: projectId})
+	if err != nil {
+		log.Fatalf("Failed to generate download-auctions state: %s", err.Error())
 
 		return
 	}
@@ -86,25 +96,14 @@ func main() {
 			return
 		}
 
-		regionRealm, err := sotah.NewRegionRealmTuple(string(body))
-		if err != nil {
-			WriteErroneousResponse(w, "Could not decode request body", err)
+		msg := state.Run(body)
+		if msg.Code != codes.Ok {
+			WriteErroneousResponse(w, "State run code was not Ok", errors.New(msg.Err))
 
 			return
 		}
 
-		logging.WithField("request-body", string(body)).Info("Received region-realm")
-
-		logging.Info("Sending response")
-
-		responseBody, err := regionRealm.EncodeForDelivery()
-		if err != nil {
-			WriteErroneousResponse(w, "Encode response body", err)
-
-			return
-		}
-
-		if _, err := fmt.Fprint(w, responseBody); err != nil {
+		if _, err := fmt.Fprint(w, msg.Data); err != nil {
 			logging.WithField("error", err.Error()).Error("Failed to return response")
 
 			return
