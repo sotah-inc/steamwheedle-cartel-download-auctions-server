@@ -8,11 +8,10 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/sotah-inc/steamwheedle-cartel/pkg/sotah"
-
 	"cloud.google.com/go/compute/metadata"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
+	"github.com/sotah-inc/steamwheedle-cartel/pkg/act"
 	"github.com/sotah-inc/steamwheedle-cartel/pkg/logging"
 	"github.com/sotah-inc/steamwheedle-cartel/pkg/logging/stackdriver"
 	"github.com/sotah-inc/steamwheedle-cartel/pkg/sotah/codes"
@@ -49,28 +48,6 @@ func init() {
 	}
 }
 
-func WriteErroneousMessageResponse(w http.ResponseWriter, responseBody string, msg sotah.Message) {
-	WriteErroneousResponse(w, codes.CodeToHTTPStatus(msg.Code), responseBody)
-
-	logging.WithField("error", msg.Err).Error(responseBody)
-}
-
-func WriteErroneousErrorResponse(w http.ResponseWriter, responseBody string, err error) {
-	WriteErroneousResponse(w, http.StatusInternalServerError, responseBody)
-
-	logging.WithField("error", err.Error()).Error(responseBody)
-}
-
-func WriteErroneousResponse(w http.ResponseWriter, code int, responseBody string) {
-	w.WriteHeader(code)
-
-	if _, err := fmt.Fprint(w, responseBody); err != nil {
-		logging.WithField("error", err.Error()).Error("Failed to write response")
-
-		return
-	}
-}
-
 func main() {
 	// establishing log verbosity
 	logVerbosity, err := logrus.ParseLevel("info")
@@ -102,14 +79,14 @@ func main() {
 
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
-			WriteErroneousErrorResponse(w, "Could not read request body", err)
+			act.WriteErroneousErrorResponse(w, "Could not read request body", err)
 
 			return
 		}
 
 		msg := state.Run(body)
 		if msg.Code != codes.Ok {
-			WriteErroneousMessageResponse(w, "State run code was not Ok", msg)
+			act.WriteErroneousMessageResponse(w, "State run code was not Ok", msg)
 
 			return
 		}
