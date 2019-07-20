@@ -91,13 +91,13 @@ func main() {
 			return
 		}
 
-		logging.WithField("response-body", msg.Data).Info("Writing response")
-
 		if _, err := fmt.Fprint(w, msg.Data); err != nil {
 			logging.WithField("error", err.Error()).Error("Failed to return response")
 
 			return
 		}
+
+		logging.Info("Sent response")
 	}).Methods("POST")
 	http.Handle("/", r)
 
