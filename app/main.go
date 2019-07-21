@@ -89,22 +89,25 @@ func main() {
 		}
 
 		msg := state.Run(body)
-		if msg.Code != codes.Ok {
-			act.WriteErroneousMessageResponse(w, "State run code was not Ok", msg)
+		switch msg.Code {
+		case codes.Ok:
+			w.WriteHeader(http.StatusCreated)
+
+			if _, err := fmt.Fprint(w, msg.Data); err != nil {
+				logging.WithField("error", err.Error()).Error("Failed to return response")
+
+				return
+			}
+		case codes.NoAction:
+			w.WriteHeader(http.StatusNotModified)
+		default:
+			act.WriteErroneousMessageResponse(w, "State run code was invalid", msg)
 
 			logging.WithFields(logrus.Fields{
 				"code":  msg.Code,
 				"error": msg.Err,
 				"data":  msg.Data,
-			}).Error("State run code was not Ok")
-
-			return
-		}
-
-		if _, err := fmt.Fprint(w, msg.Data); err != nil {
-			logging.WithField("error", err.Error()).Error("Failed to return response")
-
-			return
+			}).Error("State run code was invalid")
 		}
 
 		logging.Info("Sent response")
