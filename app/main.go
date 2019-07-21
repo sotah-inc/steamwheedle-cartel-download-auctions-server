@@ -81,12 +81,22 @@ func main() {
 		if err != nil {
 			act.WriteErroneousErrorResponse(w, "Could not read request body", err)
 
+			logging.WithFields(logrus.Fields{
+				"error": err.Error(),
+			}).Error("Could not read request body")
+
 			return
 		}
 
 		msg := state.Run(body)
 		if msg.Code != codes.Ok {
 			act.WriteErroneousMessageResponse(w, "State run code was not Ok", msg)
+
+			logging.WithFields(logrus.Fields{
+				"code":  msg.Code,
+				"error": msg.Err,
+				"data":  msg.Data,
+			}).Error("State run code was not Ok")
 
 			return
 		}
